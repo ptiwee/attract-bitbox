@@ -26,11 +26,11 @@ class Outline {
         m_layers = [];
 
         if (shadow) {
-            for (local i=0; i<5; i++) {
-                m_layers.push(surface.add_text("", 0, 0, 0, 0));
-                m_layers[i].set_bg_rgb(1, 1, 1);
-                m_layers[i].bg_alpha = 32;
-            }
+            //for (local i=0; i<5; i++) {
+            //    m_layers.push(surface.add_text("", 0, 0, 0, 0));
+            //    m_layers[i].set_bg_rgb(1, 1, 1);
+            //    m_layers[i].bg_alpha = 32;
+            //}
         }
 
         local border = surface.add_text("", 0, 0, 0, 0);
@@ -676,9 +676,19 @@ class Corner {
     function on_transition(ttype, var, ttime) {
         switch (ttype) {
             case Transition.ToNewList:
+                local previous = fe.list.display_index, next = fe.list.display_index;
+
+                do {
+                    previous = ((previous - 1) + fe.displays.len()) % fe.displays.len();
+                } while (!fe.displays[previous].in_cycle);
+
+                do {
+                    next = (next + 1) % fe.displays.len();
+                } while (!fe.displays[next].in_cycle);
+
                 m_stripes[0].index = fe.list.display_index;
-                m_stripes[1].index = ((fe.list.display_index - 1) + fe.displays.len()) % fe.displays.len();
-                m_stripes[2].index = (fe.list.display_index + 1) % fe.displays.len();
+                m_stripes[1].index = previous;
+                m_stripes[2].index = next;
                 switch_state("grown");
                 break;
         }
