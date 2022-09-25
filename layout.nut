@@ -27,7 +27,22 @@ fe.layout.preserve_aspect_ratio = true;
 /*****************/
 /* VIDEO PREVIEW */
 /*****************/
-local snap = fe.add_artwork("snap", 0, 0, WIDTH, HEIGHT);
+function get_video(index_offset, filter_offset) {
+    local art = fe.get_art("artwork", index_offset, filter_offset, Art.Default);
+
+    if (art == "")
+        art = "snap.png";
+
+    return art;
+}
+
+function get_picture(index_offset, filter_offset) {
+    local art = fe.get_art("artwork", index_offset, filter_offset, Art.ImagesOnly);
+
+    return art;
+}
+
+local snap = fe.add_image("[!get_video]", 0, 0, WIDTH, HEIGHT);
 snap.preserve_aspect_ratio = true;
 snap.trigger = Transition.EndNavigation;
 
@@ -51,7 +66,7 @@ class Cover {
         m_white = fe.add_text("", 0, 0, 0, 0);
         m_white.set_bg_rgb(255, 255, 255);
 
-        m_cover = fe.add_artwork("flyer");
+        m_cover = fe.add_image("");
 
         fe.add_transition_callback(this, "on_transition");
     }
@@ -126,6 +141,7 @@ class Cover {
         switch (ttype) {
             case Transition.ToNewList:
             case Transition.FromOldSelection:
+                m_cover.file_name = get_picture(0, 0);
                 resize();
         }
     }
@@ -136,9 +152,10 @@ local cover = Cover();
 /**************/
 /* GAMES LIST */
 /**************/
-local box = fe.add_text("", 0, 1024, 320, 0);
+local box = fe.add_text("", 0, 0, 320, 0);
 box.charsize = 24;
 box.font = "BebasNeue";
+box.alpha = 0;
 
 function format(index_offset, filter_offset) {
     local title = fe.game_info(Info.Title, index_offset, filter_offset);
