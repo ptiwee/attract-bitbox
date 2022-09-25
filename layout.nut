@@ -30,7 +30,7 @@ fe.layout.preserve_aspect_ratio = true;
 function get_video(index_offset, filter_offset) {
     local art = fe.get_art("artwork", index_offset, filter_offset, Art.Default);
 
-    if (art == "")
+    if (art.slice(-3) != "mp4")
         art = "snap.png";
 
     return art;
