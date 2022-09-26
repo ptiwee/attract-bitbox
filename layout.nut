@@ -58,6 +58,7 @@ function get_picture(index_offset, filter_offset) {
 local snap = fe.add_image("[!get_video]", 0, 0, WIDTH, HEIGHT);
 snap.preserve_aspect_ratio = true;
 snap.trigger = Transition.EndNavigation;
+snap.video_flags = Vid.NoLoop;
 
 /*********/
 /* COVER */
@@ -321,3 +322,51 @@ function on_transition(ttype, var, ttime) {
     }
 }
 fe.add_transition_callback("on_transition");
+
+/* Random game selection */
+local random = {
+    "trigger": 0,
+    "next_input": 0,
+    "next": true,
+    "steps": 1,
+    "done": 0,
+    "dirty": true,
+};
+
+function tick(ttime) {
+    if (random.dirty) {
+        /* Regenerate trigger */
+        random.trigger = ttime + (snap.video_duration > 5000 ? snap.video_duration : 5000);
+        random.steps = rand() % 5 + 5;
+        random.done = 0;
+
+        random.dirty = false;
+    } else {
+        if (ttime > random.trigger) {
+            if (random.done < random.steps) {
+                if (ttime > random.next_input) {
+                    fe.signal("next_game");
+
+                    random.done += 1;
+                    random.next_input = ttime + 120;
+                }
+            } else {
+                snap.file_name = get_video(0, 0);
+                random.dirty = true;
+            }
+        }
+    }
+}
+fe.add_ticks_callback("tick");
+
+function on_signal(signal) {
+    switch (signal) {
+        case "up":
+        case "down":
+        case "left":
+        case "right":
+            random.dirty = true;
+            break;
+    }
+}
+fe.add_signal_handler("on_signal");
