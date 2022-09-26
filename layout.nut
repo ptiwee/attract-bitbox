@@ -299,6 +299,16 @@ class CornerStripe {
 
 local corner = CornerStripe();
 
+/* Random game selection */
+local random = {
+    "trigger": 0,
+    "next_input": 0,
+    "next": true,
+    "steps": 1,
+    "done": 0,
+    "dirty": true,
+};
+
 function on_transition(ttype, var, ttime) {
     switch (ttype) {
         case Transition.ToNewList:
@@ -319,19 +329,17 @@ function on_transition(ttype, var, ttime) {
                 }
             }
             break;
+        case Transition.FromGame:
+            random.dirty = true;
+
+            try {
+                snap.video_playing = true;
+                snap.video_time = 0;
+            } catch (e) {};
+            break;
     }
 }
 fe.add_transition_callback("on_transition");
-
-/* Random game selection */
-local random = {
-    "trigger": 0,
-    "next_input": 0,
-    "next": true,
-    "steps": 1,
-    "done": 0,
-    "dirty": true,
-};
 
 function tick(ttime) {
     if (random.dirty) {
