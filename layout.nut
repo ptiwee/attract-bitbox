@@ -17,6 +17,19 @@ local systems = {
     "default": [189, 195, 199],
 };
 
+/***************/
+/* AUDIO FILES */
+/***************/
+local clics = [
+    fe.add_sound("clic.wav", false),
+    fe.add_sound("clic.wav", false),
+    fe.add_sound("clic.wav", false),
+    fe.add_sound("clic.wav", false),
+    fe.add_sound("clic.wav", false),
+];
+
+local cloc = fe.add_sound("cloc.wav", false);
+
 /**************/
 /* FIXED SIZE */
 /**************/
@@ -293,6 +306,17 @@ function on_transition(ttype, var, ttime) {
             list.selbg_red = systems[fe.list.name][0];
             list.selbg_green = systems[fe.list.name][1];
             list.selbg_blue = systems[fe.list.name][2];
+
+            cloc.playing = true;
+
+            break;
+        case Transition.FromOldSelection:
+            for (local i=0; i<clics.len(); i++) {
+                if (!clics[i].playing) {
+                    clics[i].playing = true;
+                    break;
+                }
+            }
             break;
     }
 }
