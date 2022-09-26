@@ -367,6 +367,20 @@ function on_signal(signal) {
         case "right":
             random.dirty = true;
             break;
+        case "custom1":
+            try {
+                snap.video_playing = false;
+            } catch (e) {};
+
+            fe.plugin_command("retroarch", "-L /usr/lib/libretro/libretro_pocketsnes.so -c /usr/share/retroarch/retroarch.cfg /usr/share/attract/roms/tester.sfc");
+            random.dirty = true;
+
+            try {
+                snap.video_playing = true;
+                snap.video_time = 0;
+            } catch (e) {};
+
+            break
     }
 }
 fe.add_signal_handler("on_signal");
