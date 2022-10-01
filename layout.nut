@@ -92,7 +92,7 @@ class Cover {
         height = size()[1];
 
         x = 960 - m_cover.width * 0.5 - 20;
-        y = 768;
+        y = 764;
     }
 
     function size() {
@@ -192,10 +192,11 @@ function format(index_offset, filter_offset) {
     return title;
 }
 
-local list = fe.add_listbox(960, 4, 320, 2 * 768);
+local list = fe.add_listbox(960, 0, 320, 2 * 768);
 list.charsize = 24;
 list.bg_alpha = 128;
 list.sel_alpha = 224;
+list.set_rgb(236, 240, 241);
 list.set_sel_rgb(0, 0, 0);
 list.set_bg_rgb(0, 0, 0);
 list.set_selbg_rgb(209, 72, 65);
