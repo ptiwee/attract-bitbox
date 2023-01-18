@@ -1,5 +1,5 @@
-local WIDTH = 1280;
-local HEIGHT = 1024;
+local WIDTH = fe.layout.width;
+local HEIGHT = fe.layout.height;
 
 local systems = {
     "arcade": [211, 84, 0],
@@ -29,13 +29,6 @@ local clics = [
 ];
 
 local cloc = fe.add_sound("cloc.wav", false);
-
-/**************/
-/* FIXED SIZE */
-/**************/
-fe.layout.width = WIDTH;
-fe.layout.height = HEIGHT;
-fe.layout.preserve_aspect_ratio = true;
 
 /*****************/
 /* VIDEO PREVIEW */
@@ -91,8 +84,8 @@ class Cover {
         width = size()[0];
         height = size()[1];
 
-        x = 960 - m_cover.width * 0.5 - 20;
-        y = 764;
+        x = WIDTH * 0.75 - m_cover.width * 0.5 - 20;
+        y = HEIGHT * 0.75;
     }
 
     function size() {
@@ -121,8 +114,8 @@ class Cover {
                 break;
             case "y":
                 /* Keep on screen */
-                if (val + m_cover.height * 0.5 > 1024 - 16) {
-                    val = 1024 - m_cover.height * 0.5 - 16;
+                if (val + m_cover.height * 0.5 > HEIGHT - 16) {
+                    val = HEIGHT - m_cover.height * 0.5 - 16;
                 }
 
                 m_border.y = val - m_border.height * 0.5;
@@ -166,7 +159,7 @@ local cover = Cover();
 /**************/
 /* GAMES LIST */
 /**************/
-local box = fe.add_text("", 0, 0, 320, 0);
+local box = fe.add_text("", 0, 0, WIDTH * 0.25, 0);
 box.charsize = 24;
 box.font = "BebasNeue";
 box.alpha = 0;
@@ -192,7 +185,7 @@ function format(index_offset, filter_offset) {
     return title;
 }
 
-local list = fe.add_listbox(960, 0, 320, 2 * 768);
+local list = fe.add_listbox(WIDTH * 0.75, HEIGHT * 0.75 - 930, WIDTH * 0.25, 1800);
 list.charsize = 24;
 list.bg_alpha = 128;
 list.sel_alpha = 224;
@@ -202,103 +195,18 @@ list.set_bg_rgb(0, 0, 0);
 list.set_selbg_rgb(209, 72, 65);
 list.align = Align.Left;
 list.font = "BebasNeue";
-list.rows = 25;
+list.rows = 30;
 list.format_string = "[!format]";
 
-local list_border = fe.add_text("", 959, 0, 1, 1024);
+local list_border = fe.add_text("", WIDTH * 0.75 - 1, 0, 1, HEIGHT);
 list_border.set_bg_rgb(1, 1, 1);
 
-fe.add_image("controls.png", 474, 952).alpha = 224;
+fe.add_image("controls.png", WIDTH * 0.5 - 166, HEIGHT - 72).alpha = 224;
 
 /*****************/
 /* SYSTEM CORNER */
 /*****************/
-class CornerStripe {
-    m_surface = null;
-    m_border = null;
-    m_background = null;
-    m_logo = null;
-
-    constructor() {
-        m_surface = fe.add_surface(1920, 1280);
-
-        m_border = m_surface.add_text("", 0, 0, 1920, 1280);
-        m_border.set_bg_rgb(1, 1, 1);
-
-        m_background = m_surface.add_text("", 0, 1, 1920, 1280);
-        m_background.set_bg_rgb(209, 72, 65);
-
-        m_logo = fe.add_image("systems/[DisplayName].png", 960, 64, 192, 96);
-        m_logo.preserve_aspect_ratio = true;
-
-        m_surface.origin_x = 960;
-        m_surface.origin_y = 640;
-
-        m_logo.origin_x = 96;
-        m_logo.origin_y = 48;
-
-        x = 128;
-        y = 128;
-        rotation = -45;
-        height = 128;
-    }
-
-    function _set(idx, val) {
-        switch (idx) {
-            case "x":
-                m_surface.x = val;
-                m_logo.x = val;
-                break;
-            case "y":
-                m_surface.y = val;
-                m_logo.y = val;
-                break;
-            case "height":
-                m_border.height = val + 2;
-                m_background.height = val;
-
-                m_border.y = m_surface.origin_y - m_border.height * 0.5;
-                m_background.y = m_surface.origin_y - m_background.height * 0.5;
-
-                local lheight = 128 + ((val.tofloat() - 128) / 1152) * 112;
-
-                m_logo.width = lheight * 1.5;
-                m_logo.height = lheight * 0.75;
-                
-                m_logo.origin_x = m_logo.width * 0.5;
-                m_logo.origin_y = m_logo.height * 0.5;
-
-                break;
-            case "rotation":
-                m_surface.rotation = val;
-                m_logo.rotation = val;
-                break;
-            case "bg_red":
-                m_background.bg_red = val;
-                break;
-            case "bg_green":
-                m_background.bg_green = val;
-                break;
-            case "bg_blue":
-                m_background.bg_blue = val;
-                break;
-            case "index":
-                local system = "default";
-
-                if (fe.displays[val].name in systems)
-                    system = fe.displays[val].name;
-
-                bg_red = systems[system][0];
-                bg_green = systems[system][1];
-                bg_blue = systems[system][2];
-
-                m_logo.file_name = "systems/" + system + ".png";
-                break;
-        }
-    }
-}
-
-local corner = CornerStripe();
+fe.add_image("systems/[DisplayName].png", 0, 0, 384, 384);
 
 /* Random game selection */
 local random = {
@@ -313,8 +221,6 @@ local random = {
 function on_transition(ttype, var, ttime) {
     switch (ttype) {
         case Transition.ToNewList:
-            corner.index = fe.list.display_index;
-
             list.selbg_red = systems[fe.list.name][0];
             list.selbg_green = systems[fe.list.name][1];
             list.selbg_blue = systems[fe.list.name][2];
