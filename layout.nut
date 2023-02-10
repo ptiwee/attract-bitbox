@@ -287,7 +287,7 @@ function on_signal(signal) {
                 snap.video_playing = false;
             } catch (e) {};
 
-            fe.plugin_command("retroarch", "-L /usr/lib/libretro/libretro_pocketsnes.so -c /usr/share/retroarch/retroarch.cfg /usr/share/attract/roms/tester.sfc");
+            fe.plugin_command("retroarch", "-L /usr/lib/libretro/snes9x2002_libretro.so -c /usr/share/retroarch/retroarch.cfg /usr/share/attract/roms/tester.sfc");
             random.dirty = true;
 
             try {
